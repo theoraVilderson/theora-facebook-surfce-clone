@@ -1,0 +1,32 @@
+header {
+  background-color: var(--primary-background);
+
+  .header__searchIcon {
+    fill: var(--search-icon-color);
+  }
+  .header__leftSearchIcon {
+    background-color: var(--secondary-icon-background);
+  }
+  .header__centerItem {
+    max-width: 111.6px;
+    min-width: 50px;
+    flex-grow: 1;
+    &:not(.header__centerItem--active) {
+      border-radius: 10px;
+      border-bottom: solid 3px var(--primary-background);
+    }
+  }
+  .header__centerItem svg {
+    fill: var(--primary-text-color);
+  }
+  .header__centerItem--active {
+    border-bottom: solid 3px var(--primary-button-background);
+  }
+  .header__centerItem--active svg {
+    fill: var(--primary-button-background);
+  }
+
+  .header__rightItem {
+    background-color: var(--secondary-icon-background);
+  }
+}
