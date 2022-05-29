@@ -38,8 +38,8 @@ function HeaderRightItem({ children }) {
 
 function Header() {
   return (
-    <header className="px-4 p-2 md:p-0 md:px-4 md:pt-1  justify-between md:justify-stretch header flex ">
-      <div className="header__left flex items-center gap-2 cursor-pointer">
+    <header className="px-4 p-2 md:p-0 md:px-4 md:pt-1 flex-col static h-auto xs:sticky xs:flex-row  justify-between md:justify-stretch header flex shadow-md">
+      <div className="header__left flex items-center gap-2 cursor-pointer flex-col xs:flex-row">
         <FacebookIcon />
         <div className="header__leftSearchIcon flex justify-center items-center w-8 h-8 p-5 rounded-full">
           <SearchOutlinedIcon
@@ -49,7 +49,7 @@ function Header() {
         </div>
       </div>
       <div
-        className="header__center px-2 flex items-center gap-2 justify-center hidden md:flex"
+        className="header__center px-2 flex  items-end gap-2 justify-center hidden sm:flex"
         style={{ flexGrow: 1 }}
       >
         <HeaderCenterItem title="Home" active>
@@ -65,7 +65,7 @@ function Header() {
           <MenuIcon />
         </HeaderCenterItem>
       </div>
-      <div className="header__right flex items-center gap-2">
+      <div className="header__right flex flex-col xs:flex-row items-center gap-2">
         <HeaderRightItem>
           <span className="hidden lg:flex">
             <ViewComfyIcon />

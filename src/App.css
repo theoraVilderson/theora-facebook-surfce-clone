@@ -7,19 +7,22 @@
 :root {
   --primary-text-color: #050505;
   --secondary-icon-color: #65676b;
+  --secondary-text: #65676b;
   --primary-button-background: #1b74e4;
+  --primary-overlay-button-background: #e7f3ff;
   --secondary-button-background: #e4e6eb;
   --search-icon-color: #606770;
   --secondary-icon-background: #f0f2f5;
   --hover-overlay: rgba(200, 200, 200, 0.5);
   --body-background: #f0f2f5;
   --primary-background: #fff;
+  --header-height: 60px;
 }
-.hover-overlay {
-  transition: background-color 0.3s ease-in-out;
+body .hover-overlay {
+  transition: background-color 0.1s ease-in-out;
 }
-.hover-overlay:hover {
-  background-color: var(--hover-overlay);
+body .hover-overlay:hover {
+  background-color: var(--hover-overlay) !important;
 }
 body {
   background-color: var(--body-background);

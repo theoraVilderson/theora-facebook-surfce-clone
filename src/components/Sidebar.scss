@@ -1,0 +1,13 @@
+.sidebar {
+  max-height: calc(100vh - var(--header-height));
+  position: sticky;
+  top: var(--header-height);
+  left: 0;
+  overflow-y: auto;
+  padding-top: 10px;
+}
+@media (max-height: 600px) {
+  .sidebar__item .avatar {
+    transform: scale(0.77777777);
+  }
+}

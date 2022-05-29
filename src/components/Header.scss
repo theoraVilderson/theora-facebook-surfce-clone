@@ -1,6 +1,10 @@
 header {
   background-color: var(--primary-background);
-
+  height: var(--header-height);
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 2;
   .header__searchIcon {
     fill: var(--search-icon-color);
   }
@@ -9,8 +13,9 @@ header {
   }
   .header__centerItem {
     max-width: 111.6px;
+    width: 15%;
     min-width: 50px;
-    flex-grow: 1;
+    flex-shrink: 1;
     &:not(.header__centerItem--active) {
       border-radius: 10px;
       border-bottom: solid 3px var(--primary-background);
