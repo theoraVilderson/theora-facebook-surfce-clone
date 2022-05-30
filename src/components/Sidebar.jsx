@@ -6,9 +6,17 @@ import icons from "../icons/Icons";
 import { useUserContextValue } from "../userContext";
 import classNames from "classnames";
 import "./Sidebar.scss";
-function SideBarItem({ userImage, label, avatar, Icon, className, ...props }) {
+
+export function SideBarItem({
+  userImage,
+  label,
+  avatar,
+  Icon,
+  className,
+  ...props
+}) {
   const itemClass = classNames(
-    "sidebar__item hover-overlay flex gap-5 items-center py-[5px] mx-2 rounded-lg px-3 cursor-pointer font-bold",
+    "sidebar__item hover-overlay flex gap-5 items-center py-[4px] mx-2 rounded-lg px-3 cursor-pointer font-bold",
     className
   );
 
@@ -27,6 +35,25 @@ function SideBarFooterLink({ children }) {
     <a href="/" className="sidebar__footer__link hover:underline">
       {children}
     </a>
+  );
+}
+
+export function SideBarFooter() {
+  return (
+    <div className="sidebar__footer break-words px-5 py-2">
+      <SideBarFooterLink>Privacy</SideBarFooterLink>
+      {" . "}
+      <SideBarFooterLink>Terms</SideBarFooterLink>
+      {" . "}
+      <SideBarFooterLink>Advertising</SideBarFooterLink>
+      {" . "}
+      <SideBarFooterLink>Ad&nbsp;Choices</SideBarFooterLink>
+      {" . "}
+      <SideBarFooterLink>Cookies</SideBarFooterLink>
+      {" . "}
+      <span> More . </span>
+      <span> Meta © 2022 </span>
+    </div>
   );
 }
 
@@ -108,20 +135,7 @@ function Sidebar({ show = false }) {
         onClick={() => setShowMore((showMore) => !showMore)}
       />
       {/* SideBarFooter */}
-      <div className="sidebar__footer break-words px-5 py-2">
-        <SideBarFooterLink>Privacy</SideBarFooterLink>
-        {" . "}
-        <SideBarFooterLink>Terms</SideBarFooterLink>
-        {" . "}
-        <SideBarFooterLink>Advertising</SideBarFooterLink>
-        {" . "}
-        <SideBarFooterLink>Ad&nbsp;Choices</SideBarFooterLink>
-        {" . "}
-        <SideBarFooterLink>Cookies</SideBarFooterLink>
-        {" . "}
-        <span> More . </span>
-        <span> Meta © 2022 </span>
-      </div>
+      <SideBarFooter />
     </aside>
   );
 }

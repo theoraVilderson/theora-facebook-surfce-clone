@@ -4,10 +4,15 @@
   top: var(--header-height);
   left: 0;
   overflow-y: auto;
-  padding-top: 10px;
+  padding-top: 20px;
+}
+.sidebar__footer {
+  font-size: small;
 }
 @media (max-height: 600px) {
-  .sidebar__item .avatar {
-    transform: scale(0.77777777);
+  .sidebar {
+    .sidebar__item .avatar {
+      transform: scale(0.77777777);
+    }
   }
 }

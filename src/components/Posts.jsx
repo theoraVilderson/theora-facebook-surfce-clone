@@ -9,24 +9,24 @@ function Posts() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    let firstTime = true;
     const observer = db
       .collection("Posts")
       .limit(10)
       .orderBy("timestamp", "desc")
       .onSnapshot(async (shots) => {
         const changes = shots.docChanges();
-        const isModify = changes.every(
-          (e) => e.type == "modified" || e.type == "removed" || firstTime
-        );
-        console.log(firstTime, changes, isModify, !!isModify);
-        if (firstTime) firstTime = false;
+        console.log(changes);
+        const isModify = changes.every((e) => {
+          const doc = e.doc.data();
+          return (
+            new Date(doc.timestamp.toDate()).toDateString() != "Invalid Date"
+          );
+        });
         if (!isModify || !changes.length) return;
         const currentUsers = [];
         const lastRes = [];
         const nowPosts = [];
         shots.docs.forEach(async (newData) => {
-          console.log("we are her2");
           const post = {};
           post.id = newData.id;
           newData = newData.data();
@@ -47,7 +47,6 @@ function Posts() {
           post.user = user;
           lastRes.push(post);
         });
-        console.log(lastRes);
         setPosts(lastRes);
       });
     return () => {

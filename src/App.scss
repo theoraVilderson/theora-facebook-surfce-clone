@@ -1,0 +1,109 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+@font-face {
+  font-family: "Glyphicons Halflings";
+  src: url("./fonts/FontIcon.eot?");
+  src: url("./fonts/FontIcon.eot?#iefix") format("embedded-opentype"),
+    url("./fonts/FontIcon.woff") format("woff"),
+    url("./fonts/FontIcon.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.glyphicon {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: "Glyphicons Halflings";
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@mixin light-theme {
+  --primary-text-color: #050505;
+  --primary-background: #fff;
+  --secondary-icon-color: #65676b;
+  --secondary-text: #65676b;
+  --primary-button-background: #1b74e4;
+  --primary-overlay-button-background: #e7f3ff;
+  --secondary-button-background: #e4e6eb;
+  --secondary-button-background-floating: var(--primary-background);
+  --search-icon-color: #606770;
+  --secondary-icon-background: #f0f2f5;
+  --hover-overlay: rgba(200, 200, 200, 0.5);
+  --body-background: #f0f2f5;
+  --header-height: 60px;
+  --danger:#f3425f;
+}
+@mixin dark-theme {
+  --primary-text-color: #e4e6eb;
+  --secondary-icon-color: #65676b;
+  --secondary-text: #b0b3b8;
+  --primary-button-background: hsl(214, 100%, 59%);
+  --primary-overlay-button-background: rgba(45, 136, 255, 0.2);
+  --secondary-button-background: rgba(255, 255, 255, 0.1);
+  --secondary-button-background-floating: #4b4c4f;
+  --search-icon-color: #606770;
+  --secondary-icon-background: #3a3b3c;
+  --hover-overlay: rgba(255, 255, 255, 0.1);
+  --body-background: #18191a;
+  --primary-background: #242526;
+  --header-height: 60px;
+  --danger:#f3425f;
+}
+:root {
+  @include light-theme;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    @include dark-theme;
+  }
+  body:not(.light) .themeToggle:not(.themeToggle--active) {
+    --toggle-left: calc(100% - 15px);
+    --toggle-active-color: #fff;
+  }
+  body:not(.light)
+    .themeToggle__toggler:not(.themeToggle--active)
+    i.glyphicon-moon::before {
+    display: inline-block;
+  }
+  body:not(.light)
+    .themeToggle__toggler:not(.themeToggle--active)
+    i.glyphicon-sunf::after {
+    display: none !important;
+  }
+}
+.dark {
+  @include dark-theme;
+}
+
+.light {
+  @include light-theme;
+}
+
+body .hover-overlay {
+  transition: background-color 0.1s ease-in-out;
+}
+body .hover-overlay:hover {
+  background-color: var(--hover-overlay) !important;
+}
+body {
+  background-color: var(--body-background);
+  color: var(--primary-text-color);
+}
+.MuiTextField-root {
+  label:not(.Mui-Focued) {
+    color: var(--secondary-text);
+  }
+  input {
+    color: var(--primary-text-color);
+  }
+}

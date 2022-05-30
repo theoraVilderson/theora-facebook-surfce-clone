@@ -11,6 +11,7 @@ import { useUserContextValue } from "../userContext";
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import addPost from "../addPost";
+import "./CreatePost.scss";
 
 const style = {
   position: "absolute",
@@ -18,10 +19,10 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   minWidth: "300px",
-  minHeight: "150px",
+  minHeight: "250px",
   width: "40%",
   height: "40vh",
-  bgcolor: "background.paper",
+  bgcolor: "var(--primary-background)",
   border: "2px solid #000",
   boxShadow: 24,
   pt: 2,
@@ -118,17 +119,18 @@ function CreatePost() {
             onClose={handleClose}
             aria-labelledby="child-modal-title"
             aria-describedby="child-modal-description"
+            className="min-h-[50vh]"
           >
             <Box sx={{ ...style }}>
               <div className="flex flex-col justify-between h-full">
-                <h2 id="child-modal-title" className="p2">
+                <h2 id="child-modal-title" className="py-2 my-3">
                   Image URL
                 </h2>
                 <div className="flex items-center gap-2">
                   <TextField
                     id="outlined-helperText"
                     label="Put Image URL Here"
-                    className="w-full p-2"
+                    className="w-full p-2 imageURLFiled"
                     value={imgURL}
                     onInput={(e) => setImageURl(e.target.value)}
                     onBlur={(e) => setImageURl(e.target.value)}

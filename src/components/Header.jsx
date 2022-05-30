@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
@@ -12,6 +12,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import icons from "../icons/Icons";
 import classNames from "classnames";
 import "./Header.scss";
+import Settings from "./Settings";
 const { FacebookIcon } = icons;
 
 function HeaderCenterItem({ title, active, children, ...props }) {
@@ -28,15 +29,25 @@ function HeaderCenterItem({ title, active, children, ...props }) {
   );
 }
 
-function HeaderRightItem({ children }) {
+function HeaderRightItem({ children, className, ...props }) {
+  const divClass = classNames(
+    `hover-overlay header__rightItem flex items-center justify-center w-8 h-8 p-5 rounded-full  cursor-pointer relative`,
+    className
+  );
   return (
-    <div className="hover-overlay header__rightItem flex items-center justify-center w-8 h-8 p-5 rounded-full  cursor-pointer ">
+    <div {...props} className={divClass}>
       {children}
     </div>
   );
 }
 
 function Header() {
+  const [showSetting, setShowSetting] = useState(true);
+
+  const handleSettings = () => {
+    setShowSetting(!showSetting);
+    console.log("we are here around", showSetting);
+  };
   return (
     <header className="px-4 p-2 md:p-0 md:px-4 md:pt-1 flex-col static h-auto xs:sticky xs:flex-row  justify-between md:justify-stretch header flex shadow-md">
       <div className="header__left flex items-center gap-2 cursor-pointer flex-col xs:flex-row">
@@ -80,8 +91,13 @@ function Header() {
         <HeaderRightItem>
           <NotificationsIcon />
         </HeaderRightItem>
-        <HeaderRightItem>
+        <HeaderRightItem onClick={handleSettings} className={showSetting&&"header__rightItem--active"}>
           <ArrowDropDownIcon />
+          {showSetting && (
+            <div className="absolute top-full right-0 rounded-lg shadow-2xl z-10">
+              <Settings />
+            </div>
+          )}
         </HeaderRightItem>
       </div>
     </header>

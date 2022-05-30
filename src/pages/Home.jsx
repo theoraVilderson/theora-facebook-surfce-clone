@@ -15,10 +15,10 @@ function Home() {
         <Feed />
         <Widget />
         <Avatar
-          className=" bottom-5 right-10  cursor-pointer shadow-lg hover-overlay"
+          className=" bottom-5 right-10 z-20  cursor-pointer shadow-lg hover-overlay"
           style={{
             position: "fixed",
-            backgroundColor: "var(--primary-background)",
+            backgroundColor: "var(--secondary-button-background-floating)",
             color: "var(--primary-text-color)",
             height: "50px",
             width: "50px",

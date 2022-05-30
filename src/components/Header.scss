@@ -33,5 +33,10 @@ header {
 
   .header__rightItem {
     background-color: var(--secondary-icon-background);
+    &.header__rightItem--active,
+    &.header__rightItem--active:hover {
+      color: var(--primary-button-background) !important;
+      background-color: var(--primary-overlay-button-background) !important;
+    }
   }
 }

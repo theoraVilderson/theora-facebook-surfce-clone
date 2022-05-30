@@ -11,6 +11,10 @@ export default async function getUsersWhere(fields = [], limit = -1) {
   }
   const users = await colRef.get();
   if (users.empty) return null;
-
-  return users.map((e) => ({ userId: e.id, user: e.data() }));
+  const arrayUsers = [];
+  users.forEach((e) => {
+    arrayUsers.push({ userId: e.id, user: e.data() });
+  });
+  console.log({ arrayUsers });
+  return arrayUsers;
 }

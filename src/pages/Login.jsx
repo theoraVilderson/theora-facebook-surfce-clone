@@ -24,16 +24,17 @@ const { FacebookIcon } = icons;
 function Login() {
   // const [userPhone, setUserPhone] = useState("+989360932966");
   // const [userValidation, setUserValidation] = useState("123456");
+  const { user, userId, setUserData } = useUserContextValue();
   const [userPhone, setUserPhone] = useState("+12345678901");
   const [userValidation, setUserValidation] = useState("123456");
   const [step, setStep] = useState(0);
   const [buttonText, setButtonText] = useState("Login With Phone");
-  const [shouldValidatePhoneNumber, setShouldValidatePhoneNumber] =
-    useState(false);
+  const [shouldValidatePhoneNumber, setShouldValidatePhoneNumber] = useState(
+    user && !user?.phoneNumber
+  );
   const [userErrorNotExistsForPhone, setUserErrorNotExistsForPhone] =
     useState(false);
   const [userErrorExistsForPhone, setUserErrorExistsForPhone] = useState(false);
-  const { user, userId, setUserData } = useUserContextValue();
   const onLoginRequest = () => {
     window.recaptchaVerifier = new RecaptchaVerifier(
       "verifier-container",
@@ -61,16 +62,15 @@ function Login() {
         window.recaptchaWidgetId = widgetId;
       });
   };
-  const onSendValidationRequest = () => {
+  const onSendValidationRequest = async () => {
     const appVerifier = window.recaptchaVerifier;
 
-    const users = getUsersWhere([["phoneNumber", "==", userPhone]]);
-    if (!users) {
-      return setUserErrorNotExistsForPhone(true);
-    }
+    const users = await getUsersWhere([["phoneNumber", "==", userPhone]]);
+
     if (!shouldValidatePhoneNumber && !users) {
       return setUserErrorNotExistsForPhone(true);
     } else if (shouldValidatePhoneNumber && users) {
+      console.log({ users });
       return setUserErrorExistsForPhone(true);
     }
     setPersistence(auth, browserSessionPersistence)
@@ -99,7 +99,6 @@ function Login() {
   const onLoggedIn = async (type, data) => {
     switch (type) {
       case "google":
-        console.log("google", data);
         const userToSend = {
           name: data.user.displayName,
           email: data.user.email,
@@ -107,13 +106,11 @@ function Login() {
         };
         const user = await saveUser(userToSend, data.user.uid);
         if (!user.user.phoneNumber) setShouldValidatePhoneNumber(true);
-        console.log("we are saving user to local", {
-          type: userActionTypes.INIT_USER,
-          data: user,
-        });
+
         setUserData({ type: userActionTypes.INIT_USER, data: user });
         break;
       case "phone":
+        // TODO fix the userID problem
         const updatedUserData = await saveUser(
           {
             phoneNumber: userPhone,
@@ -218,10 +215,14 @@ function Login() {
         </div>
         <div className={`step ${step !== 1 ? "" : "steps__step--active"}`}>
           {userErrorNotExistsForPhone && (
-            <h1>Phone number is invalid or you haven't signed up before!</h1>
+            <h1 className="font-bold" style={{ color: "var(--danger)" }}>
+              Phone number is invalid or you haven't signed up before!
+            </h1>
           )}
           {userErrorExistsForPhone && (
-            <h1>Please Use an other number this number is exists</h1>
+            <h1 className="font-bold" style={{ color: "var(--danger)" }}>
+              Please Use an other number this number is exists
+            </h1>
           )}
           <div className="self-start justify-self-start flex justify-start w-50">
             <IconButton
