@@ -29,10 +29,12 @@ const auth = getAuth();
 auth.useDeviceLanguage();
 
 export {
+  app,
   auth,
   setPersistence,
   browserSessionPersistence,
   inMemoryPersistence,
   signInWithPopup,
   GoogleAuthProvider,
+  getAuth,
 };

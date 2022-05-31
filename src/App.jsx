@@ -1,6 +1,7 @@
 import "./App.scss";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import PageLoader from "./components/PageLoader";
 import getUser from "./getUser";
 import { UserProvider } from "./userContext";
 import {
@@ -14,19 +15,21 @@ import {
   initValue as globalInitValue,
   globalActionTypes,
 } from "./globalReducer";
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 function App() {
   const [userData, setUserData] = useReducer(userReducer, userInitValue);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [globalData, setGlobalData] = useReducer(
     globalReducer,
     globalInitValue
   );
 
   useEffect(() => {
-    const uid = window.localStorage.getItem("UID");
     async function fetchData() {
+      const uid = window.localStorage.getItem("UID");
       const user = await getUser(uid);
       if (user) setUserData({ type: userActionTypes.INIT_USER, data: user });
+      setIsLoaded(true);
     }
     fetchData();
   }, []);
@@ -41,13 +44,13 @@ function App() {
   }, []);
 
   const goLogin = !userData?.user || !userData?.user?.phoneNumber;
-  console.log(userData);
   return (
     <UserProvider value={{ ...userData, setUserData }}>
       <GlobalProvider
         value={{ user: userData.user, ...globalData, setGlobalData }}
       >
-        {goLogin ? <Login /> : <Home />}
+        {<PageLoader loaded={isLoaded} />}
+        {isLoaded && (goLogin ? <Login /> : <Home />)}
       </GlobalProvider>
     </UserProvider>
   );

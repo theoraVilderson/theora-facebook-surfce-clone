@@ -1,0 +1,21 @@
+.CountrySelect {
+  .MuiSelect-select {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    padding-top: 8px;
+    color: var(--primary-text-color);
+  }
+}
+.CountrySelectItem.MuiMenuItem-root {
+  background-color: var(--primary-background);
+  color: var(--secondary-text);
+  &:hover {
+    background-color: var(--secondary-icon-background);
+  }
+  &.Mui-selected,
+  &.Mui-selected:hover {
+    background-color: var(--body-background);
+  }
+}

@@ -41,6 +41,8 @@
   --body-background: #f0f2f5;
   --header-height: 60px;
   --danger:#f3425f;
+  --loader-background:var(--body-background);
+  --loader-color:var(--primary-button-background);
 }
 @mixin dark-theme {
   --primary-text-color: #e4e6eb;
@@ -57,6 +59,8 @@
   --primary-background: #242526;
   --header-height: 60px;
   --danger:#f3425f;
+  --loader-background:var(--body-background);
+  --loader-color:var(--primary-text-color);
 }
 :root {
   @include light-theme;

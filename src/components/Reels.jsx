@@ -2,6 +2,7 @@ import React from "react";
 import Reel from "./Reel";
 import "./Reels.scss";
 function Reels() {
+  // TODO update images url
   const reelsInfo = [
     {
       id: "adwe",
