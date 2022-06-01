@@ -21,6 +21,8 @@ import { userActionTypes } from "../userReducer";
 import Typography from "@mui/material/Typography";
 import { parsePhoneNumber } from "react-phone-number-input";
 
+import ThemeToggle, { useThemeHandler } from "../components/ThemeToggle";
+
 const { FacebookIcon } = icons;
 
 export function ErrorText({ error, children }) {
@@ -49,6 +51,8 @@ function Login() {
   const [userErrorExistsForPhone, setUserErrorExistsForPhone] = useState(false);
   const [errorInvalidVerifyCode, setErrorInvalidVerifyCode] = useState(false);
   const [lastPhone, setLastPhone] = useState("");
+  const [theme, onThemeChange] = useThemeHandler();
+
   const onLogOut = () => {
     if (auth.currentUser) {
       auth.signOut();
@@ -116,6 +120,7 @@ function Login() {
             goToStep(0);
             resetCaptcha();
           },
+          theme,
         },
         auth
       ));
@@ -274,7 +279,7 @@ function Login() {
         compareValidation();
         break;
       default:
-      break;
+        break;
     }
   };
 
@@ -307,6 +312,7 @@ function Login() {
   useEffect(() => {
     setShouldValidatePhoneNumber(shouldItValidatePhoneNumber);
   }, [shouldItValidatePhoneNumber]);
+  
   useEffect(() => {
     if (
       shouldValidatePhoneNumber &&
@@ -315,15 +321,15 @@ function Login() {
     ) {
       stepHandler(0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldValidatePhoneNumber]);
-  // return (
-  //   <div className="w-[300px] mx-auto p-2 ">
 
-  //   </div>
-  // );
   return (
     <div className="flex min-h-screen h-fit items-center justify-around flex-col ">
-      <div className="flex flex-col items-center justify-around gap-3">
+      <div className="themeToggler absolute xs:fixed left-1/2 -translate-x-1/2 xs:left-auto xs:translate-x-0 xs:right-5 top-5">
+        <ThemeToggle onClick={onThemeChange} isLight={theme === "light"} />
+      </div>
+      <div className="flex flex-col items-center justify-around gap-3 mt-20 xs:mt-0">
         <FacebookIcon className="w-32 h-32" />
         <h1
           className="font-bold text-3xl"

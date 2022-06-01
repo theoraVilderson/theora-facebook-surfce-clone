@@ -2,26 +2,23 @@ import React from "react";
 import "./Settings.scss";
 import { SideBarItem, SideBarFooter } from "./Sidebar";
 import { useUserContextValue } from "../userContext";
-import { useGlobalContextValue } from "../globalContext";
-import { globalActionTypes } from "../globalReducer";
+
 import { auth } from "../firebase";
 import { userActionTypes } from "../userReducer";
 
 import NightlightIcon from "@mui/icons-material/Nightlight";
 import LogoutIcon from "@mui/icons-material/Logout";
+
+import ThemeToggle, { useThemeHandler } from "./ThemeToggle";
+
 function Settings() {
   const {
     user: { name: userName, userImage },
     setUserData,
   } = useUserContextValue();
-  const { theme, setGlobalData } = useGlobalContextValue();
-  const isLight = theme == "light";
-  const onChangeTheme = () => {
-    setGlobalData({
-      type: globalActionTypes.TOGGLE_THEME,
-      data: isLight ? "dark" : "light",
-    });
-  };
+  const [theme, onChangeTheme] = useThemeHandler();
+  console.log(theme, onChangeTheme);
+  const isLight = theme === "light";
   const onLogOut = () => {
     if (auth.currentUser) {
       auth.signOut();
@@ -75,24 +72,7 @@ function Settings() {
                   Theme : ({theme})
                 </h2>
                 <div className="absolute top-1/2 -translate-y-1/2 right-2">
-                  <div className="relative">
-                    <div className={"themeToggle"}>
-                      <button
-                        className={
-                          "themeToggle__toggler" +
-                          (!isLight ? " themeToggle--active" : "")
-                        }
-                      >
-                        <div className="themeToggle__toggleBar">
-                          <i
-                            className={
-                              "glyphicon glyphicon-sunf glyphicon-moon"
-                            }
-                          ></i>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
+                  <ThemeToggle isLight={isLight} />
                 </div>
               </>
             }

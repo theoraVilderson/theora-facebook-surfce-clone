@@ -43,7 +43,7 @@ function CreatePost() {
     try {
       // on success
       new URL(imgURL);
-      if (!new URL(imgURL).hostname) throw "bad url";
+      if (!new URL(imgURL).hostname) throw new Error("bad url");
       return {};
     } catch (e) {
       //on bad url

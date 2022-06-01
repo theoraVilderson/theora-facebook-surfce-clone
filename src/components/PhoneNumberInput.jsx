@@ -6,6 +6,7 @@ import {
   getCountryCallingCode,
 } from "react-phone-number-input";
 import PropTypes from "prop-types";
+import "./PhoneNumberInput.scss";
 function PhoneNumberInput({ value, onChange, ...rest }) {
   const defaultCountry = "US";
   const [country, setCountry] = useState(defaultCountry);
@@ -39,6 +40,7 @@ function PhoneNumberInput({ value, onChange, ...rest }) {
     if (country === defaultCountry) {
       getUserCountry();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

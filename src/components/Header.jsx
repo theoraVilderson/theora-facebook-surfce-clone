@@ -60,7 +60,7 @@ function Header() {
         </div>
       </div>
       <div
-        className="header__center px-2 flex  items-end gap-2 justify-center hidden sm:flex"
+        className="header__center px-2 items-end gap-2 justify-center hidden sm:flex"
         style={{ flexGrow: 1 }}
       >
         <HeaderCenterItem title="Home" active>
@@ -91,7 +91,10 @@ function Header() {
         <HeaderRightItem>
           <NotificationsIcon />
         </HeaderRightItem>
-        <HeaderRightItem onClick={handleSettings} className={showSetting&&"header__rightItem--active"}>
+        <HeaderRightItem
+          onClick={handleSettings}
+          className={showSetting && "header__rightItem--active"}
+        >
           <ArrowDropDownIcon />
           {showSetting && (
             <div className="absolute top-full right-0 rounded-lg shadow-2xl z-10">

@@ -15,11 +15,10 @@ function Posts() {
       .orderBy("timestamp", "desc")
       .onSnapshot(async (shots) => {
         const changes = shots.docChanges();
-        console.log(changes);
         const isModify = changes.every((e) => {
           const doc = e.doc.data();
           return (
-            new Date(doc.timestamp.toDate()).toDateString() != "Invalid Date"
+            new Date(doc.timestamp.toDate()).toDateString() !== "Invalid Date"
           );
         });
         if (!isModify || !changes.length) return;
@@ -34,7 +33,7 @@ function Posts() {
           post.timeStamp = new Date(newData.timestamp?.toDate?.());
           post.userId = newData.userId;
           post.image = newData.imageUrl;
-          let user = posts.find((e) => e.userId == newData.userId)?.user;
+          let user = posts.find((e) => e.userId === newData.userId)?.user;
           currentUsers.push((user = user ?? getUser(newData.userId)));
           nowPosts.push(post);
         });
@@ -50,8 +49,10 @@ function Posts() {
         setPosts(lastRes);
       });
     return () => {
+      // dis will disconnect observer
       observer();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div>

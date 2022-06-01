@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./Widget.scss";
 import { SideBarItem } from "./Sidebar";
 import AddIcon from "@mui/icons-material/Add";
