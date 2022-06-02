@@ -15,7 +15,7 @@ function PhoneNumberInput({ value, onChange, disabled = false, ...rest }) {
       let userIp = "";
 
       try {
-        userIp = await fetch("http://httpbin.org/ip");
+        userIp = await fetch("https://httpbin.org/ip");
         userIp = await userIp.json();
         userIp = userIp.origin;
       } catch {
