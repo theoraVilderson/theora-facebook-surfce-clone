@@ -6,7 +6,6 @@ export const userActionTypes = {
 
 export const reducer = (state, { type, data }) => {
   let lastRes = state;
-  console.log(state, { type, data });
   switch (type) {
     case userActionTypes.INIT_USER:
       lastRes = { ...state, ...data };

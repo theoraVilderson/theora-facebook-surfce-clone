@@ -4,8 +4,11 @@ import getUser from "./getUser";
 export default async function setUser(data, uid = null) {
   const colRef = db.collection("Users");
   const userRef = colRef.doc(uid);
-  console.log("before we set");
-  await userRef.set(data, { merge: true });
-  console.log("after we set");
+  try {
+    await userRef.set(data, { merge: true });
+  } catch (e) {
+    alert("couldn't update user data");
+    return {};
+  }
   return await getUser(uid);
 }

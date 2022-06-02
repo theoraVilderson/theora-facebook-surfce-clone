@@ -42,11 +42,10 @@ function HeaderRightItem({ children, className, ...props }) {
 }
 
 function Header() {
-  const [showSetting, setShowSetting] = useState(true);
+  const [showSetting, setShowSetting] = useState(false);
 
   const handleSettings = () => {
     setShowSetting(!showSetting);
-    console.log("we are here around", showSetting);
   };
   return (
     <header className="px-4 p-2 md:p-0 md:px-4 md:pt-1 flex-col static h-auto xs:sticky xs:flex-row  justify-between md:justify-stretch header flex shadow-md">

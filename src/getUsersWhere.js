@@ -9,12 +9,17 @@ export default async function getUsersWhere(fields = [], limit = -1) {
   if (limit + 1) {
     colRef = colRef.limit(limit);
   }
-  const users = await colRef.get();
+  let users;
+  try {
+    users = await colRef.get();
+  } catch (e) {
+    alert("couldn't fetch users");
+    return null;
+  }
   if (users.empty) return null;
   const arrayUsers = [];
   users.forEach((e) => {
     arrayUsers.push({ userId: e.id, user: e.data() });
   });
-  console.log({ arrayUsers });
   return arrayUsers;
 }

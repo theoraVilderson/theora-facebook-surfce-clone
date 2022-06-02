@@ -4,9 +4,11 @@ import Post from "./Post";
 import "./Posts.scss";
 import { db } from "../firebase";
 import getUser from "../getUser";
+import PostsLoader from "./PostsLoader";
 
 function Posts() {
   const [posts, setPosts] = useState([]);
+  const [postLoaded, setPostLoaded] = useState(false);
 
   useEffect(() => {
     const observer = db
@@ -21,6 +23,9 @@ function Posts() {
             new Date(doc.timestamp.toDate()).toDateString() !== "Invalid Date"
           );
         });
+        if (isModify && !changes.length && !postLoaded) {
+          setPostLoaded(true);
+        }
         if (!isModify || !changes.length) return;
         const currentUsers = [];
         const lastRes = [];
@@ -47,6 +52,9 @@ function Posts() {
           lastRes.push(post);
         });
         setPosts(lastRes);
+        if (!postLoaded) {
+          setPostLoaded(true);
+        }
       });
     return () => {
       // dis will disconnect observer
@@ -56,9 +64,18 @@ function Posts() {
   }, []);
   return (
     <div>
-      {posts.map((post) => {
-        return <Post key={post.id} {...post} />;
-      })}
+      {postLoaded ? (
+        posts.map((post) => {
+          return <Post key={post.id} {...post} />;
+        })
+      ) : (
+        <>
+          <PostsLoader />
+          <PostsLoader />
+          <PostsLoader />
+          <PostsLoader />
+        </>
+      )}
     </div>
   );
 }

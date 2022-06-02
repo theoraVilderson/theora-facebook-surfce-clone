@@ -20,5 +20,12 @@
         right: 100%;
       }
     }
+    & .MuiInputBase-input.Mui-disabled {
+      background-color: var(--hover-overlay);
+      color: var(--search-icon-color);
+    }
   }
+}
+.login__buttons button:disabled {
+  background-color: var(--hover-overlay);
 }

@@ -7,7 +7,6 @@ export const globalActionTypes = {
 
 export const reducer = (state, { type, data }) => {
   let lastRes = state;
-  console.log(state, { type, data });
   switch (type) {
     case globalActionTypes.TOGGLE_THEME:
       lastRes = { ...state, theme: data };

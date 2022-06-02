@@ -7,7 +7,7 @@ import {
 } from "react-phone-number-input";
 import PropTypes from "prop-types";
 import "./PhoneNumberInput.scss";
-function PhoneNumberInput({ value, onChange, ...rest }) {
+function PhoneNumberInput({ value, onChange, disabled = false, ...rest }) {
   const defaultCountry = "US";
   const [country, setCountry] = useState(defaultCountry);
   useEffect(() => {
@@ -34,7 +34,6 @@ function PhoneNumberInput({ value, onChange, ...rest }) {
         //couldn't get user country
         return;
       }
-      console.log(countryCode);
       setCountry(countryCode);
     }
     if (country === defaultCountry) {
@@ -42,7 +41,6 @@ function PhoneNumberInput({ value, onChange, ...rest }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   return (
     <>
       <CountrySelect
@@ -66,9 +64,11 @@ function PhoneNumberInput({ value, onChange, ...rest }) {
           onChange(lastRes, undefined);
         }}
         withLabel
+        disabled={disabled}
       />
 
       <TextField
+        disabled={disabled}
         {...rest}
         value={value}
         onChange={(e) => {

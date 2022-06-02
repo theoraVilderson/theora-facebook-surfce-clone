@@ -10,6 +10,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import getUsersWhere from "../getUsersWhere";
 import saveUser from "../saveUser";
 import { useUserContextValue } from "../userContext";
+import CircularProgress from "@mui/material/CircularProgress";
+import Skeleton from "@mui/material/Skeleton";
 import {
   auth,
   setPersistence,
@@ -28,7 +30,7 @@ const { FacebookIcon } = icons;
 export function ErrorText({ error, children }) {
   return (
     error && (
-      <h1 className="font-bold" style={{ color: "var(--danger)" }}>
+      <h1 className="font-bold p-3" style={{ color: "var(--danger)" }}>
         {children}
       </h1>
     )
@@ -38,8 +40,8 @@ function Login() {
   // const [userPhone, setUserPhone] = useState("+989360932966");
   // const [userValidation, setUserValidation] = useState("123456");
   const { user, userId, setUserData } = useUserContextValue();
-  const [userPhone, setUserPhone] = useState("+12345678901");
-  const [userValidation, setUserValidation] = useState("123456");
+  const [userPhone, setUserPhone] = useState("");
+  const [userValidation, setUserValidation] = useState("");
   const [phoneStep, setPhoneStep] = useState(0);
   const [buttonText, setButtonText] = useState("Login With Phone");
   const shouldItValidatePhoneNumber = user && !user?.phoneNumber;
@@ -52,7 +54,9 @@ function Login() {
   const [errorInvalidVerifyCode, setErrorInvalidVerifyCode] = useState(false);
   const [lastPhone, setLastPhone] = useState("");
   const [theme, onThemeChange] = useThemeHandler();
-
+  const [captchaLoader, setCaptchaLoader] = useState(false);
+  const [goggleBtnLoginLoader, setGoggleBtnLoginLoader] = useState(false);
+  const [phoneLoginBtnLoader, setPhoneLoginBtnLoader] = useState(false);
   const onLogOut = () => {
     if (auth.currentUser) {
       auth.signOut();
@@ -68,16 +72,23 @@ function Login() {
     () => {
       setButtonText("Login With Phone");
       setPhoneStep(0);
-    },
-    () => {
-      setButtonText("Send Validation Message");
-      setPhoneStep(1);
+      window.phoneStep = 0;
+      setLastPhone("");
     },
     () => {
       userErrorNotExistsForPhone && setUserErrorNotExistsForPhone(false);
       userErrorExistsForPhone && setUserErrorExistsForPhone(false);
+      setButtonText("Send Validation Message");
+      setPhoneStep(1);
+      window.phoneStep = 1;
+    },
+    () => {
+      errorInvalidVerifyCode && setErrorInvalidVerifyCode(false);
+      userErrorNotExistsForPhone && setUserErrorNotExistsForPhone(false);
+      userErrorExistsForPhone && setUserErrorExistsForPhone(false);
       setButtonText("Verify");
       setPhoneStep(2);
+      window.phoneStep = 2;
     },
   ];
   const goToStep = (phoneStep) => {
@@ -91,14 +102,16 @@ function Login() {
       ?.click?.();
   };
   const onLoginRequest = () => {
+    console.log("login reuqst");
     hidePhoneCountryOptions();
     const isValidCaptcha =
       window.recaptchaWidgetId != null && getCaptchaResponse();
-    const isRendered = window.recaptchaWidgetId != null;
+    const isRendered = window.recaptchaVerifier != null;
     if (isValidCaptcha) {
       if (shouldValidatePhoneNumber) {
-        resetCaptcha();
-        return;
+        destroyCaptcha();
+
+        return onLoginRequest();
       }
       return goToStep(1);
     }
@@ -109,9 +122,7 @@ function Login() {
           size: "normal",
           callback: (response) => {
             // reCAPTCHA solved, allow signInWithPhoneNumber.
-            goToStep(1);
-
-            console.log("done!!");
+            if ((window.phoneStep ?? 0) === 0) goToStep(1);
           },
           "expired-callback": () => {
             // Response expired. Ask user to solve reCAPTCHA again.
@@ -125,15 +136,24 @@ function Login() {
         auth
       ));
 
-    !isRendered &&
+    if (!isRendered) {
+      setCaptchaLoader(true);
       window.recaptchaVerifier
         .render()
         .then((widgetId) => {
           window.recaptchaWidgetId = widgetId;
+          setCaptchaLoader(false);
         })
         .catch((e) => {
           onLoginRequest();
         });
+    } else {
+      if (captchaLoader) {
+        alert("just second captcha is loading");
+      } else {
+        alert("please make sure the captcha is verified");
+      }
+    }
   };
   const resetCaptcha = () => {
     window?.recaptchaVerifier?._reset?.();
@@ -170,15 +190,18 @@ function Login() {
     const appVerifier = window.recaptchaVerifier;
 
     if (Object.keys(validatePhone()).length) return;
+    setPhoneLoginBtnLoader(true);
     if (userPhone === lastPhone) {
+      setPhoneLoginBtnLoader(false);
       return goToStep(2);
     }
     const users = await getUsersWhere([["phoneNumber", "==", userPhone]]);
 
     if (!shouldValidatePhoneNumber && !users) {
+      setPhoneLoginBtnLoader(false);
       return setUserErrorNotExistsForPhone(true);
     } else if (shouldValidatePhoneNumber && users) {
-      console.log({ users });
+      setPhoneLoginBtnLoader(false);
       return setUserErrorExistsForPhone(true);
     }
     setPersistence(auth, browserSessionPersistence)
@@ -190,16 +213,38 @@ function Login() {
             window.confirmationResult = confirmationResult;
             goToStep(2);
             setLastPhone(userPhone);
+            setPhoneLoginBtnLoader(false);
             // ...
           })
           .catch((error) => {
             // Error; SMS not sent
             // ...
+            setPhoneLoginBtnLoader(false);
             alert(error);
           });
       })
       .catch((error) => {
+        setPhoneLoginBtnLoader(false);
         alert(error);
+      });
+  };
+  const compareValidation = () => {
+    setPhoneLoginBtnLoader(true);
+
+    if (userErrorNotExistsForPhone) setUserErrorNotExistsForPhone(false);
+    if (userErrorExistsForPhone) setUserErrorExistsForPhone(false);
+    window.confirmationResult
+      .confirm(userValidation)
+      .then((result) => {
+        // User signed in successfully.
+        const user = result.user;
+        onLoggedIn("phone", { user });
+        // ...
+      })
+      .catch(() => {
+        // User couldn't sign in (bad verification code?)
+        setPhoneLoginBtnLoader(false);
+        setErrorInvalidVerifyCode(true);
       });
   };
   const googleLoggedInHandler = async (data) => {
@@ -215,6 +260,7 @@ function Login() {
   };
   const phoneLoggedInHandler = async (data) => {
     // it means user is not for validation
+
     let theUserId = userId;
     if (!theUserId) {
       const users = await getUsersWhere([["phoneNumber", "==", userPhone]]);
@@ -239,35 +285,19 @@ function Login() {
     switch (type) {
       case "google":
         await googleLoggedInHandler(data);
-        destroyCaptcha();
+        setGoggleBtnLoginLoader(false);
         break;
       case "phone":
         await phoneLoggedInHandler(data);
-        destroyCaptcha();
+        setPhoneLoginBtnLoader(false);
         break;
       default:
-        break;
+        return;
     }
-  };
-  const compareValidation = () => {
-    if (userErrorNotExistsForPhone) setUserErrorNotExistsForPhone(false);
-    if (userErrorExistsForPhone) setUserErrorExistsForPhone(false);
-    window.confirmationResult
-      .confirm(userValidation)
-      .then((result) => {
-        // User signed in successfully.
-        const user = result.user;
-        onLoggedIn("phone", { user });
-        // ...
-      })
-      .catch((error) => {
-        // User couldn't sign in (bad verification code?)
-        setErrorInvalidVerifyCode(true);
-      });
+    destroyCaptcha();
   };
 
   const stepHandler = (currentStep = phoneStep) => {
-    console.log(currentStep);
     switch (currentStep) {
       case 0:
         onLoginRequest();
@@ -284,6 +314,7 @@ function Login() {
   };
 
   const googleHandler = () => {
+    setGoggleBtnLoginLoader(true);
     setPersistence(auth, browserSessionPersistence)
       .then(() => {
         const provider = new GoogleAuthProvider();
@@ -301,18 +332,20 @@ function Login() {
             // ...
           })
           .catch(() => {
+            setGoggleBtnLoginLoader(false);
             // user canceled teh login process
           });
       })
       .catch((error) => {
         alert(error);
+        setGoggleBtnLoginLoader(false);
       });
   };
 
   useEffect(() => {
     setShouldValidatePhoneNumber(shouldItValidatePhoneNumber);
   }, [shouldItValidatePhoneNumber]);
-  
+
   useEffect(() => {
     if (
       shouldValidatePhoneNumber &&
@@ -355,8 +388,21 @@ function Login() {
         >
           <div
             id="verifier-container"
-            className="scale-50 xls:scale-75 xs:scale-100"
+            className={`scale-50 xls:scale-75 xs:scale-100${
+              captchaLoader ? " hidden" : ""
+            }`}
           ></div>
+          {captchaLoader ? (
+            <Skeleton
+              animation="wave"
+              sx={{ bgcolor: "var(--hover-overlay)" }}
+              variant="rectangular"
+              width={"100%"}
+              height={90}
+            />
+          ) : (
+            ""
+          )}
           {shouldValidatePhoneNumber && (
             <div>
               <Button
@@ -381,36 +427,28 @@ function Login() {
           </ErrorText>
 
           <ErrorText error={userErrorExistsForPhone}>
-            Phone number is invalid or you haven't signed up before!
+            Phone number used before please use an other number!
           </ErrorText>
 
           <div className="self-start justify-self-start flex justify-start w-50">
             <IconButton
               color="primary"
               onClick={() => {
-                setButtonText("Login With Phone");
-                setPhoneStep((e) => --e);
-                console.log(shouldItValidatePhoneNumber, "herer");
+                goToStep(0);
                 if (shouldItValidatePhoneNumber) stepHandler(0);
+                setPhoneLoginBtnLoader(false);
               }}
             >
               <ArrowBackIcon />
             </IconButton>
           </div>
-          {/* <TextField
-            id="phoneInput"
-            label="Your Phone Number"
-            className="w-full p-2"
-            value={userPhone}
-            onChange={(e) => setUserPhone(e.target.value)}
-            {...validatePhone()}
-            
-          /> */}
+
           <PhoneNumberInput
             id="phoneInput"
             label="Your Phone Number"
             className="w-full p-2"
             value={userPhone}
+            disabled={phoneLoginBtnLoader}
             onChange={(newPhoneNumber, parsedData) => {
               setUserPhone(newPhoneNumber);
             }}
@@ -427,49 +465,67 @@ function Login() {
               color="primary"
               onClick={() => {
                 // reCAPTCHA solved, allow signInWithPhoneNumber.
-                setButtonText("Send Validation Message");
-                setPhoneStep((e) => --e);
+                goToStep(1);
+                setPhoneLoginBtnLoader(false);
               }}
             >
               <ArrowBackIcon />
             </IconButton>
           </div>
-
+          <ErrorText error={errorInvalidVerifyCode}>invalid Code !</ErrorText>
           <TextField
             id="VerifyData"
             label="Validation Number"
             className="w-full p-2"
             value={userValidation}
+            disabled={phoneLoginBtnLoader}
             onInput={(e) => setUserValidation(e.target.value)}
             onBlur={(e) => setUserValidation(e.target.value)}
             {...validateVerification()}
           />
         </div>
       </div>
-      {!(shouldValidatePhoneNumber && phoneStep === 0) && (
-        <Button
-          variant="contained"
-          className="min-w-32"
-          component="span"
-          onClick={() => stepHandler()}
-          id="sign-in-button"
-        >
-          {buttonText}
-        </Button>
-      )}
-      <br />
-      {!shouldValidatePhoneNumber && (
-        <Button
-          variant="contained"
-          className="min-w-32"
-          component="span"
-          color="error"
-          onClick={googleHandler}
-          id="sign-in-button"
-        >
-          Login With Google
-        </Button>
-      )}
+      <div className="login__buttons flex flex-col gap-3 items-center">
+        {!(shouldValidatePhoneNumber && phoneStep === 0) && (
+          <Button
+            variant="contained"
+            className="min-w-32"
+            component="button"
+            onClick={() => stepHandler()}
+            id="sign-in-button"
+            disabled={goggleBtnLoginLoader || phoneLoginBtnLoader}
+          >
+            {buttonText}
+            {phoneLoginBtnLoader && (
+              <CircularProgress
+                color="inherit"
+                className="mx-3"
+                style={{ width: "30px", height: "30px" }}
+              />
+            )}
+          </Button>
+        )}
+        {!shouldValidatePhoneNumber && (
+          <Button
+            variant="contained"
+            className="min-w-32"
+            component="button"
+            color="error"
+            onClick={googleHandler}
+            id="sign-in-button"
+            disabled={goggleBtnLoginLoader || phoneLoginBtnLoader}
+          >
+            Login With Google{" "}
+            {goggleBtnLoginLoader && (
+              <CircularProgress
+                color="inherit"
+                className="mx-3"
+                style={{ width: "30px", height: "30px" }}
+              />
+            )}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

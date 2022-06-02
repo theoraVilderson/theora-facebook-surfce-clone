@@ -17,7 +17,6 @@ function Settings() {
     setUserData,
   } = useUserContextValue();
   const [theme, onChangeTheme] = useThemeHandler();
-  console.log(theme, onChangeTheme);
   const isLight = theme === "light";
   const onLogOut = () => {
     if (auth.currentUser) {
@@ -38,7 +37,7 @@ function Settings() {
         }}
       >
         <SideBarItem
-          className="setting__userProfile flex flex-col xs:flex-row"
+          className="setting__userProfile flex flex-col xs:flex-row mt-3"
           userImage={userImage}
           label={
             <>

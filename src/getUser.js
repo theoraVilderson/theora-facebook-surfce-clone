@@ -6,7 +6,13 @@ export default async function getUser(
   const colRef = db.collection("Users");
   if (typeof uid != "string") return null;
   const userRef = colRef.doc(uid);
-  const user = await userRef.get();
+  let user;
+  try {
+    user = await userRef.get();
+  } catch (e) {
+    alert("couldn't fetch user");
+    return null;
+  }
   if (!user.exists) return null;
 
   return {
