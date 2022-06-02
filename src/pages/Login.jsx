@@ -18,10 +18,15 @@ import {
   browserSessionPersistence,
   signInWithPopup,
   GoogleAuthProvider,
+  getRedirectResult,
+  signInWithRedirect
 } from "../firebase";
 import { userActionTypes } from "../userReducer";
+import {isMobile} from 'react-device-detect';
+
 import Typography from "@mui/material/Typography";
 import { parsePhoneNumber } from "react-phone-number-input";
+import PageLoader from "../components/PageLoader";
 
 import ThemeToggle, { useThemeHandler } from "../components/ThemeToggle";
 
@@ -40,8 +45,8 @@ function Login() {
   // const [userPhone, setUserPhone] = useState("+989360932966");
   // const [userValidation, setUserValidation] = useState("123456");
   const { user, userId, setUserData } = useUserContextValue();
-  const [userPhone, setUserPhone] = useState("");
-  const [userValidation, setUserValidation] = useState("");
+  const [userPhone, setUserPhone] = useState(" ");
+  const [userValidation, setUserValidation] = useState(" ");
   const [phoneStep, setPhoneStep] = useState(0);
   const [buttonText, setButtonText] = useState("Login With Phone");
   const shouldItValidatePhoneNumber = user && !user?.phoneNumber;
@@ -57,6 +62,7 @@ function Login() {
   const [captchaLoader, setCaptchaLoader] = useState(false);
   const [goggleBtnLoginLoader, setGoggleBtnLoginLoader] = useState(false);
   const [phoneLoginBtnLoader, setPhoneLoginBtnLoader] = useState(false);
+  const [isGoogleRedirectedCacled,setIsGoogleRedirectedCacled] = useState(false);
   const onLogOut = () => {
     if (auth.currentUser) {
       auth.signOut();
@@ -102,7 +108,6 @@ function Login() {
       ?.click?.();
   };
   const onLoginRequest = () => {
-    console.log("login reuqst");
     hidePhoneCountryOptions();
     const isValidCaptcha =
       window.recaptchaWidgetId != null && getCaptchaResponse();
@@ -295,6 +300,7 @@ function Login() {
         return;
     }
     destroyCaptcha();
+    window.phoneStep=0;
   };
 
   const stepHandler = (currentStep = phoneStep) => {
@@ -313,14 +319,14 @@ function Login() {
     }
   };
 
-  const googleHandler = () => {
-    setGoggleBtnLoginLoader(true);
-    setPersistence(auth, browserSessionPersistence)
-      .then(() => {
-        const provider = new GoogleAuthProvider();
-
-        signInWithPopup(auth, provider)
-          .then((result) => {
+  const googleHandlerSuccess = (result) => {
+            if(!result) {
+            
+              if(!isGoogleRedirectedCacled) {
+                setIsGoogleRedirectedCacled(true)
+              }
+              return
+            };
             // This gives you a Google Access Token. You can use it to access the Google API.
             const credential = GoogleAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
@@ -330,11 +336,33 @@ function Login() {
             onLoggedIn("google", { user, token });
 
             // ...
-          })
-          .catch(() => {
-            setGoggleBtnLoginLoader(false);
-            // user canceled teh login process
-          });
+          };
+  const googleHandlerError = ()=>{
+      setGoggleBtnLoginLoader(false);
+  }
+
+  useEffect(()=>{
+    const actionSuccess = googleHandlerSuccess;
+    const actionError = googleHandlerError;
+    if(isMobile)
+      getRedirectResult(auth).then(actionSuccess).catch(actionError);
+    else {
+        setIsGoogleRedirectedCacled(true)
+    }
+  },[]);
+
+  const googleHandler = () => {
+    setGoggleBtnLoginLoader(true);
+    setPersistence(auth, browserSessionPersistence)
+      .then(() => {
+        const provider = new GoogleAuthProvider();
+
+        const actionSuccess = googleHandlerSuccess;
+        const actionError = googleHandlerError;
+        if(!isMobile)
+          return signInWithPopup(auth, provider) .then(actionSuccess) .catch(actionError);
+
+        signInWithRedirect(auth, provider);
       })
       .catch((error) => {
         alert(error);
@@ -358,7 +386,10 @@ function Login() {
   }, [shouldValidatePhoneNumber]);
 
   return (
-    <div className="flex min-h-screen h-fit items-center justify-around flex-col ">
+        
+    <>
+      {<PageLoader loaded={isGoogleRedirectedCacled} />}
+    {isGoogleRedirectedCacled&&<div className="flex min-h-screen h-fit items-center justify-around flex-col ">
       <div className="themeToggler absolute xs:fixed left-1/2 -translate-x-1/2 xs:left-auto xs:translate-x-0 xs:right-5 top-5">
         <ThemeToggle onClick={onThemeChange} isLight={theme === "light"} />
       </div>
@@ -474,6 +505,7 @@ function Login() {
           </div>
           <ErrorText error={errorInvalidVerifyCode}>invalid Code !</ErrorText>
           <TextField
+            variant="filled"
             id="VerifyData"
             label="Validation Number"
             className="w-full p-2"
@@ -526,7 +558,9 @@ function Login() {
           </Button>
         )}
       </div>
-    </div>
+    </div>}
+    </>
+
   );
 }
 

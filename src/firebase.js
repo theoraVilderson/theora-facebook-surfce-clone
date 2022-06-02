@@ -8,6 +8,8 @@ import {
   inMemoryPersistence,
   signInWithPopup,
   GoogleAuthProvider,
+  signInWithRedirect,
+getRedirectResult,
 } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -37,4 +39,6 @@ export {
   signInWithPopup,
   GoogleAuthProvider,
   getAuth,
+  signInWithRedirect,
+getRedirectResult
 };
