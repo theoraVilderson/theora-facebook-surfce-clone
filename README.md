@@ -1,6 +1,6 @@
 #Site DEMO
 
-[facebook](https://theora-facebook-surface-clone.web.app/ "facebook")
+[facebook-demo](https://theora-facebook-surface-clone.web.app/ "facebook")
 
 ## Contact
 
@@ -47,3 +47,9 @@
 - **react-device-detect": (Mobile Recognition),
 - **icons-material": (icons),
 - **mui/material": (Material UI Design),
+
+### Note :
+
+## **if got error couldn't fetch user in demo Because :**
+## this demo depends on firebase! if your country
+## is blocked from google services make sure your using VPN ! 
